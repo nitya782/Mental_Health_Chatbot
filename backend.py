@@ -27,7 +27,7 @@ def get_chat_history():
     return chats
 
 app = Flask(__name__)
-CORS(app, resources={r"/chat": {"origins": "http://localhost:3000"}}) 
+CORS(app) 
 
 # Path  dataset 
 dataset_path = r"C:\Users\vardh\OneDrive\Desktop\palak ki chize\try\chatbot_data.csv"
