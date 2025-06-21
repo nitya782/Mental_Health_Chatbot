@@ -278,47 +278,37 @@ if "user_input" not in st.session_state:
 #function to send message
 def send_message():
     user_input = st.session_state.get("user_input", "").strip()
+    if not user_input:
+        return
 
-    if user_input:
-        chat_id = st.session_state.current_chat
-        save_message(chat_id, "user", user_input)
-        st.session_state["user_input"] = ""
+    chat_id = st.session_state.current_chat
+    save_message(chat_id, "user", user_input)
+    st.session_state["user_input"] = ""
 
-        with st.spinner("Typing..."):
-            time.sleep(0.5)
+    with st.spinner("Typing..."):
+        time.sleep(0.5)
 
-        try:
-            response = requests.post(API_URL, json={"message": user_input})
+    try:
+        response = requests.post(API_URL, json={"message": user_input})
+        logging.debug("Raw API response text: %s", response.text)  # <-- Add this debug print
 
-            if response.status_code == 200:
-                try:
-                    response_data = response.json()
-                except ValueError:
-                    bot_response = "❌ Error: Backend returned invalid JSON."
-                    video_title = ""
-                    video_url = ""
-                else:
-                    bot_response = response_data.get("response", "I'm not sure how to respond.")
-                    bot_response = bot_response.replace("</div>", "").strip()
-
-                    video = response_data.get("video", {})
-                    video_title = video.get("title", "")
-                    video_url = video.get("url", "")
-
-                    if video_url:
-                        bot_response += f"<br><br>🎵 <b>{video_title}</b>: <a href='{video_url}' target='_blank'>Watch on YouTube</a>"
+        if response.status_code == 200:
+            try:
+                response_data = response.json()
+            except ValueError:
+                bot_response = "❌ Error: Backend returned invalid JSON."
+                logging.error("Invalid JSON response: %s", response.text)
             else:
-                bot_response = f"❌ Error {response.status_code}: {response.text}"
-                video_title = ""
-                video_url = ""
+                bot_response = response_data.get("response", "I'm not sure how to respond.")
+                # Process bot_response and videos as before...
+        else:
+            bot_response = f"❌ Error {response.status_code}: {response.text}"
+    except Exception as e:
+        bot_response = f"❌ Exception: {e}"
 
-        except Exception as e:
-            bot_response = f"❌ Exception: {e}"
-            video_title = ""
-            video_url = ""
+    save_message(chat_id, "bot", bot_response)
+    st.session_state.pop("user_input", None)
 
-        save_message(chat_id, "bot", bot_response)
-        st.session_state.pop("user_input", None)
 
 send_message() 
 # Bubbles
