@@ -7,7 +7,7 @@ import uuid
 from datetime import datetime
 
 # API Endpoint
-API_URL = "https://mental-health-chatbot-0yvl.onrender.com/frontend"  # Update this if your backend is hosted elsewhere
+API_URL = "https://mental-health-chatbot-0yvl.onrender.com/chat"  # Update this if your backend is hosted elsewhere
 
 # Connect to the SQLite database
 conn = sqlite3.connect("chat_history.db", check_same_thread=False)
