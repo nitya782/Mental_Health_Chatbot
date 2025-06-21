@@ -14,7 +14,7 @@ import google.generativeai as genai
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)  # Allow all origins; restrict this in production if needed
+CORS(app, resources={r"/chat": {"origins": "https://your-frontend-domain.com"}})  # Allow all origins; restrict this in production if needed
 
 # Load environment variables for API keys
 GENAI_API_KEY = os.getenv("GENAI_API_KEY")
